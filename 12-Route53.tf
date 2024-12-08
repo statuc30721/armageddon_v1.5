@@ -1,4 +1,4 @@
-
+/*
 #
 # Retrieve the DNS ZONE ID
 data "aws_route53_zone" "main" {
@@ -175,4 +175,4 @@ alias {
  }
   
 }
-
+*/
