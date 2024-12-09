@@ -61,6 +61,7 @@ user_data = base64encode(file("./entry-script.sh"))
     }
 }
 
+
 #-----------------------------------------------------#
 # New York Region
 
@@ -92,6 +93,7 @@ user_data = base64encode(file("./entry-script.sh"))
         create_before_destroy = true
     }
 }
+
 
 #--------------------------------------------#
 # London Region
@@ -155,6 +157,7 @@ user_data = base64encode(file("./entry-script.sh"))
         create_before_destroy = true
     }
 }
+
 
 #-----------------------------------------------------#
 # Australia

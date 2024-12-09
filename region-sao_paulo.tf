@@ -30,15 +30,15 @@ resource "aws_subnet" "public-sa-east-1a" {
 }
 
 
-resource "aws_subnet" "public-sa-east-1b" {
+resource "aws_subnet" "public-sa-east-1c" {
   vpc_id                  = aws_vpc.VPC-D-SaoPaolo-Test.id
   cidr_block              = "10.23.2.0/24"
-  availability_zone       = "sa-east-1b"
+  availability_zone       = "sa-east-1c"
   map_public_ip_on_launch = true
   provider = aws.saopaulo
 
   tags = {
-    Name    = "public-sa-east-1b"
+    Name    = "public-sa-east-1c"
     Service = "application1"
     Owner   = "Frodo"
     Planet  = "Arda"
@@ -61,14 +61,14 @@ resource "aws_subnet" "private-sa-east-1a" {
   }
 }
 
-resource "aws_subnet" "private-sa-east-1b" {
+resource "aws_subnet" "private-sa-east-1c" {
   vpc_id                  = aws_vpc.VPC-D-SaoPaolo-Test.id
   cidr_block              = "10.23.12.0/24"
-  availability_zone       = "sa-east-1b"
+  availability_zone       = "sa-east-1c"
   provider = aws.saopaulo
 
   tags = {
-    Name    = "private-sa-east-1b"
+    Name    = "private-sa-east-1c"
     Service = "application1"
     Owner   = "Frodo"
     Planet  = "Arda"
@@ -91,7 +91,7 @@ resource "aws_internet_gateway" "igw_SAO" {
   }
 }
 
-/*
+
 
 #---------------------------------------------------#
 # Sao Paulo Region
@@ -116,7 +116,7 @@ resource "aws_nat_gateway" "nat_SaoPaulo" {
 
   depends_on = [aws_internet_gateway.igw_SAO]
 }
-*/
+
 
 
 #-----------------------------------------------#
@@ -158,8 +158,8 @@ resource "aws_route_table_association" "public-sa-east-1a" {
   provider = aws.saopaulo
 }
 
-resource "aws_route_table_association" "public-sa-east-1b" {
-  subnet_id      = aws_subnet.public-sa-east-1b.id
+resource "aws_route_table_association" "public-sa-east-1c" {
+  subnet_id      = aws_subnet.public-sa-east-1c.id
   route_table_id = aws_route_table.public_SaoPaolo.id
   provider = aws.saopaulo
 }
@@ -174,8 +174,25 @@ resource "aws_route_table" "private_SaoPaulo" {
   
   
   route  {
+      cidr_block                 = "0.0.0.0/0"
+      nat_gateway_id             = aws_nat_gateway.nat_SaoPaulo.id
+      carrier_gateway_id         = ""
+      destination_prefix_list_id = ""
+      egress_only_gateway_id     = ""
+      gateway_id                 = ""
+      instance_id                = ""
+      ipv6_cidr_block            = ""
+      local_gateway_id           = ""
+      network_interface_id       = ""
+      transit_gateway_id         = ""
+      vpc_endpoint_id            = ""
+      vpc_peering_connection_id  = ""
+    }
+
+# This route is to pass traffic to Tokyo Security Zone VPC.
+route  {
       cidr_block                 = "10.0.0.0/8"
-      nat_gateway_id             = "" # aws_nat_gateway.nat_SaoPaulo.id
+      nat_gateway_id             = ""
       carrier_gateway_id         = ""
       destination_prefix_list_id = ""
       egress_only_gateway_id     = ""
@@ -188,11 +205,14 @@ resource "aws_route_table" "private_SaoPaulo" {
       vpc_endpoint_id            = ""
       vpc_peering_connection_id  = ""
     }
+ 
 
   tags = {
     Name = "private_SaoPaulo"
   }
 }
+ 
+
 
 
 # These are for the private subnets.
@@ -203,8 +223,8 @@ resource "aws_route_table_association" "private-sa-east-1a" {
   provider = aws.saopaulo
 }
 
-resource "aws_route_table_association" "private-sa-east-1b" {
-  subnet_id      = aws_subnet.private-sa-east-1b.id
+resource "aws_route_table_association" "private-sa-east-1c" {
+  subnet_id      = aws_subnet.private-sa-east-1c.id
   route_table_id = aws_route_table.private_SaoPaulo.id
   provider = aws.saopaulo
 }
@@ -357,7 +377,7 @@ resource "aws_lb" "ASG01-SAO-LB01" {
   security_groups    = [aws_security_group.ASG01-SG01-SAO-LB01.id]
   subnets            = [
     aws_subnet.public-sa-east-1a.id,
-    aws_subnet.public-sa-east-1b.id
+    aws_subnet.public-sa-east-1c.id
   ]
 
   provider = aws.saopaulo
@@ -394,7 +414,7 @@ resource "aws_autoscaling_group" "ASG01_SAO" {
   desired_capacity      = 2
   vpc_zone_identifier   = [
     aws_subnet.private-sa-east-1a.id,
-    aws_subnet.private-sa-east-1b.id
+    aws_subnet.private-sa-east-1c.id
   ]
 
   provider = aws.saopaulo

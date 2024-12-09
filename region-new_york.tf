@@ -93,7 +93,7 @@ resource "aws_internet_gateway" "igw_NY" {
   }
 }
 
-/*
+
 #-----------------------------------------------#
 # NAT
 
@@ -119,7 +119,7 @@ resource "aws_nat_gateway" "nat_NY" {
   depends_on = [aws_internet_gateway.igw_NY]
 }
 
-*/
+
 
 #---------------------------------------------------------------#
 # Routes
@@ -128,8 +128,8 @@ resource "aws_route_table" "private_NY" {
   vpc_id = aws_vpc.VPC-B-NewYork-Test.id
   
   route  {
-      cidr_block                 = "0.0.0.0/0"
-      nat_gateway_id             = "" # aws_nat_gateway.nat_NY.id
+      cidr_block                 = "10.0.0.0/8"
+      nat_gateway_id             = ""
       carrier_gateway_id         = ""
       destination_prefix_list_id = ""
       egress_only_gateway_id     = ""
@@ -143,9 +143,27 @@ resource "aws_route_table" "private_NY" {
       vpc_peering_connection_id  = ""
     }
 
+
+  route  {
+      cidr_block                 = "0.0.0.0/0"
+      nat_gateway_id             = aws_nat_gateway.nat_NY.id
+      carrier_gateway_id         = ""
+      destination_prefix_list_id = ""
+      egress_only_gateway_id     = ""
+      gateway_id                 = ""
+      instance_id                = ""
+      ipv6_cidr_block            = ""
+      local_gateway_id           = ""
+      network_interface_id       = ""
+      transit_gateway_id         = ""
+      vpc_endpoint_id            = ""
+      vpc_peering_connection_id  = ""
+    }
+
   tags = {
     Name = "private_NY"
   }
+
 }
 
 resource "aws_route_table" "public_NY" {

@@ -93,7 +93,7 @@ resource "aws_internet_gateway" "igw_HK" {
   }
 }
 
-/*
+
 #---------------------------------------------------#
 # EIP and NAT
 resource "aws_eip" "eip_HongKong" {
@@ -119,7 +119,7 @@ resource "aws_nat_gateway" "nat_HongKong" {
 }
 
 
-*/
+
 
 #-----------------------------------------------------------------#
 # Routes
@@ -178,7 +178,24 @@ resource "aws_route_table" "private_HongKong" {
   
   route  {
       cidr_block                 = "0.0.0.0/0"
-      nat_gateway_id             = "" # aws_nat_gateway.nat_HongKong.id
+      nat_gateway_id             = aws_nat_gateway.nat_HongKong.id
+      carrier_gateway_id         = ""
+      destination_prefix_list_id = ""
+      egress_only_gateway_id     = ""
+      gateway_id                 = ""
+      instance_id                = ""
+      ipv6_cidr_block            = ""
+      local_gateway_id           = ""
+      network_interface_id       = ""
+      transit_gateway_id         = ""
+      vpc_endpoint_id            = ""
+      vpc_peering_connection_id  = ""
+    }
+
+    # This route is to pass traffic to Tokyo Security Zone VPC.
+route  {
+      cidr_block                 = "10.0.0.0/8"
+      nat_gateway_id             = ""
       carrier_gateway_id         = ""
       destination_prefix_list_id = ""
       egress_only_gateway_id     = ""

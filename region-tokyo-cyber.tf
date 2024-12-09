@@ -1,12 +1,12 @@
-# VPC
+# Tokyo Security VPC
 
-resource "aws_vpc" "VPC-Cyber-Tokyo-Test" {
+resource "aws_vpc" "VPC-Cyber-Tokyo" {
     
     provider = aws.tokyo
     cidr_block = "10.19.0.0/16"
 
   tags = {
-    Name = "VPC-Cyber-Tokyo-Test"
+    Name = "VPC-Cyber-Tokyo"
     Service = "cybersecurity"
     Owner = "Frodo"
     Planet = "Arda"
@@ -16,74 +16,44 @@ resource "aws_vpc" "VPC-Cyber-Tokyo-Test" {
 
 #------------------------------------------------------------#
 #  Tokyo VPC Public IP space.
-resource "aws_subnet" "public-cyber-ap-northeast-1a" {
-    vpc_id                  = aws_vpc.VPC-Cyber-Tokyo-Test.id
-    cidr_block              = "10.19.3.0/24"
-    availability_zone       = "ap-northeast-1a"
+resource "aws_subnet" "public-cyber-ap-northeast-1d" {
+    vpc_id                  = aws_vpc.VPC-Cyber-Tokyo.id
+    cidr_block              = "10.19.1.0/24"
+    availability_zone       = "ap-northeast-1d"
     map_public_ip_on_launch = true
     provider = aws.tokyo
 
     tags = {
-    Name    = "public-cyber-ap-northeast-1a"
+    Name    = "public-cyber-ap-northeast-1d"
     Service = "cybersecurity"
     Owner   = "Frodo"
     Planet  = "Arda"
     }
 }
 
-
-
-
-resource "aws_subnet" "public-cyber-ap-northeast-1c" {
-  vpc_id                  = aws_vpc.VPC-Cyber-Tokyo-Test.id
-  cidr_block              = "10.19.4.0/24"
-  availability_zone       = "ap-northeast-1c"
-  map_public_ip_on_launch = true
-  provider = aws.tokyo
-
-  tags = {
-    Name    = "public-cyber-ap-northeast-1c"
-    Service = "cybersecurity"
-    Owner   = "Frodo"
-    Planet  = "Arda"
-  }
-}
-
 # Tokyo Private IP space.
 
-resource "aws_subnet" "private-cyber-ap-northeast-1a" {
-  vpc_id                  = aws_vpc.VPC-Cyber-Tokyo-Test.id
-  cidr_block              = "10.19.13.0/24"
-  availability_zone       = "ap-northeast-1a"
+resource "aws_subnet" "private-cyber-ap-northeast-1d" {
+  vpc_id                  = aws_vpc.VPC-Cyber-Tokyo.id
+  cidr_block              = "10.19.11.0/24"
+  availability_zone       = "ap-northeast-1d"
   provider = aws.tokyo
   
   tags = {
-    Name    = "private-cyber-ap-northeast-1a"
+    Name    = "private-cyber-ap-northeast-1d"
     Service = "cybersecurity"
     Owner   = "Frodo"
     Planet  = "Arda"
   }
 }
 
-resource "aws_subnet" "private-cyber-ap-northeast-1c" {
-  vpc_id                  = aws_vpc.VPC-Cyber-Tokyo-Test.id
-  cidr_block              = "10.19.14.0/24"
-  availability_zone       = "ap-northeast-1c"
-  provider = aws.tokyo
 
-  tags = {
-    Name    = "private-cyber-ap-northeast-1c"
-    Service = "cybersecurity"
-    Owner   = "Frodo"
-    Planet  = "Arda"
-  }
-}
 
 #--------------------------------------------------------#
-# IGW
+# Internet Gateway (IGW)
 
 resource "aws_internet_gateway" "igw_CYBER_TYO" {
-  vpc_id = aws_vpc.VPC-Cyber-Tokyo-Test.id
+  vpc_id = aws_vpc.VPC-Cyber-Tokyo.id
   provider = aws.tokyo
 
 
@@ -95,8 +65,9 @@ resource "aws_internet_gateway" "igw_CYBER_TYO" {
   }
 }
 
-
+#--------------------------------------------------------#
 # Tokyo NAT
+/*
 resource "aws_eip" "eip_CYBER_TYO" {
   vpc = true
   provider = aws.tokyo
@@ -108,7 +79,7 @@ resource "aws_eip" "eip_CYBER_TYO" {
 
 resource "aws_nat_gateway" "nat_CYBER_TYO" {
   allocation_id = aws_eip.eip_CYBER_TYO.id
-  subnet_id     = aws_subnet.public-cyber-ap-northeast-1a.id
+  subnet_id     = aws_subnet.public-cyber-d.id
   provider = aws.tokyo
 
   tags = {
@@ -117,7 +88,7 @@ resource "aws_nat_gateway" "nat_CYBER_TYO" {
 
   depends_on = [aws_internet_gateway.igw_CYBER_TYO]
 }
-
+*/
 
 
 #----------------------------------------------------#
@@ -126,7 +97,7 @@ resource "aws_nat_gateway" "nat_CYBER_TYO" {
 # Public Network
 
 resource "aws_route_table" "public_CYBER_Tokyo" {
-  vpc_id = aws_vpc.VPC-Cyber-Tokyo-Test.id
+  vpc_id = aws_vpc.VPC-Cyber-Tokyo.id
   provider = aws.tokyo
 
   route   {
@@ -154,14 +125,14 @@ resource "aws_route_table" "public_CYBER_Tokyo" {
 #
 # These are for the public subnets.
 
-resource "aws_route_table_association" "public-cyber-ap-northeast-1a" {
-  subnet_id      = aws_subnet.public-cyber-ap-northeast-1a.id
+resource "aws_route_table_association" "public-cyber-d" {
+  subnet_id      = aws_subnet.public-cyber-ap-northeast-1d.id
   route_table_id = aws_route_table.public_CYBER_Tokyo.id
   provider = aws.tokyo
 }
 
-resource "aws_route_table_association" "public-cyber-ap-northeast-1c" {
-  subnet_id      = aws_subnet.public-cyber-ap-northeast-1c.id
+resource "aws_route_table_association" "public-cyber-ap-northeast-1d" {
+  subnet_id      = aws_subnet.public-cyber-ap-northeast-1d.id
   route_table_id = aws_route_table.public_CYBER_Tokyo.id
   provider = aws.tokyo
 }
@@ -171,7 +142,7 @@ resource "aws_route_table_association" "public-cyber-ap-northeast-1c" {
 
 
 resource "aws_route_table" "private_CYBER_Tokyo" {
-  vpc_id = aws_vpc.VPC-Cyber-Tokyo-Test.id
+  vpc_id = aws_vpc.VPC-Cyber-Tokyo.id
   provider = aws.tokyo
   
   
@@ -186,7 +157,7 @@ resource "aws_route_table" "private_CYBER_Tokyo" {
       ipv6_cidr_block            = ""
       local_gateway_id           = ""
       network_interface_id       = ""
-      transit_gateway_id         = aws_ec2_transit_gateway.VPC-Cyber-Tokyo-Test-TGW01.id
+      transit_gateway_id         = aws_ec2_transit_gateway.Tokyo-Region-TGW.id
       vpc_endpoint_id            = ""
       vpc_peering_connection_id  = ""
     }
@@ -198,15 +169,8 @@ resource "aws_route_table" "private_CYBER_Tokyo" {
 
 
 # These are for the private subnets.
-
-resource "aws_route_table_association" "private-cyber-ap-northeast-1a" {
-  subnet_id      = aws_subnet.private-cyber-ap-northeast-1a.id
-  route_table_id = aws_route_table.private_CYBER_Tokyo.id
-  provider = aws.tokyo
-}
-
-resource "aws_route_table_association" "private-cyber-ap-northeast-1c" {
-  subnet_id      = aws_subnet.private-cyber-ap-northeast-1c.id
+resource "aws_route_table_association" "private-cyber-ap-northeast-1d" {
+  subnet_id      = aws_subnet.private-cyber-ap-northeast-1d.id
   route_table_id = aws_route_table.private_CYBER_Tokyo.id
   provider = aws.tokyo
 }
@@ -225,7 +189,7 @@ resource "aws_route_table_association" "private-cyber-ap-northeast-1c" {
 resource "aws_security_group" "SG01-CYBER-TYO-SYSLOG" {
     name = "SG04-TYO-SYSLOG"
     description = "Allow SSH and SYSLOG traffic to security servers."
-    vpc_id = aws_vpc.VPC-Cyber-Tokyo-Test.id
+    vpc_id = aws_vpc.VPC-Cyber-Tokyo.id
     provider = aws.tokyo
 
     ingress {

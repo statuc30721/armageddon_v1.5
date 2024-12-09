@@ -175,7 +175,7 @@ resource "aws_route_table" "private_Tokyo" {
   
   route  {
       cidr_block                 = "0.0.0.0/0"
-      nat_gateway_id             = "" # aws_nat_gateway.nat_TYO.id
+      nat_gateway_id             = aws_nat_gateway.nat_TYO.id
       carrier_gateway_id         = ""
       destination_prefix_list_id = ""
       egress_only_gateway_id     = ""
@@ -184,11 +184,27 @@ resource "aws_route_table" "private_Tokyo" {
       ipv6_cidr_block            = ""
       local_gateway_id           = ""
       network_interface_id       = ""
-      transit_gateway_id         = aws_ec2_transit_gateway.VPC-Cyber-Tokyo-Test-TGW01.id
+      transit_gateway_id         = "" #aws_ec2_transit_gateway.VPC-Cyber-Tokyo-Test-TGW01.id
       vpc_endpoint_id            = ""
       vpc_peering_connection_id  = ""
     }
 
+# This route is to pass traffic to Tokyo Security Zone VPC.
+route  {
+      cidr_block                 = "10.0.0.0/8"
+      nat_gateway_id             = ""
+      carrier_gateway_id         = ""
+      destination_prefix_list_id = ""
+      egress_only_gateway_id     = ""
+      gateway_id                 = ""
+      instance_id                = ""
+      ipv6_cidr_block            = ""
+      local_gateway_id           = ""
+      network_interface_id       = ""
+      transit_gateway_id         = aws_ec2_transit_gateway.Tokyo-Region-TGW.id
+      vpc_endpoint_id            = ""
+      vpc_peering_connection_id  = ""
+    }
   tags = {
     Name = "private_Tokyo"
   }
